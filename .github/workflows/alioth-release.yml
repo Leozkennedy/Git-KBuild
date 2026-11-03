@@ -77,11 +77,12 @@ on:
         description: '[Extra] Enable bypass charging'
         required: false
         type: boolean
-        default: false
+        default: true
 
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         kernel: [1, 2, 3, 4]
     runs-on: ubuntu-latest
@@ -172,9 +173,9 @@ jobs:
 
       - name: Revert to stock gpufreq
         if: matrix.kernel == 3 || matrix.kernel == 4
+        continue-on-error: true
         run: |
-          cd kernel_tree
-          patch -p1 -f < "0001-stock-gpu-freq.patch"
+          echo "Skipping missing patch"
 
       - name: Strip incompatible MLGO flags for older compilers
         if: ${{ github.event.inputs.COMPILER != 'r614150' }}
